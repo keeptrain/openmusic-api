@@ -1,6 +1,7 @@
 /**
  * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
  */
+exports.shorthands = undefined;
 
 /**
  * @param pgm {import('node-pg-migrate').MigrationBuilder}
@@ -8,7 +9,7 @@
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-  pgm.createTable('albums', {
+  pgm.createTable('playlists', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
@@ -17,17 +18,17 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
-    year: {
-      type: 'INT',
+    owner: {
+      type: 'VARCHAR(50)',
       notNull: true,
     },
-    created_at: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    updated_at: {
-      type: 'TEXT',
-      notNull: true,
+  });
+
+  pgm.addConstraint('playlists', 'fk_playlists.owner_users.id', {
+    foreignKeys: {
+      columns: 'owner',
+      references: 'users(id)',
+      onDelete: 'CASCADE',
     },
   });
 };
@@ -38,5 +39,6 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('albums');
+  pgm.dropConstraint('playlists', 'fk_playlists.owner_users.id');
+  pgm.dropTable('playlists');
 };

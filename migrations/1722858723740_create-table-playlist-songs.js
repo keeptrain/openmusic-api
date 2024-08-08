@@ -1,6 +1,7 @@
 /**
  * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
  */
+exports.shorthands = undefined;
 
 /**
  * @param pgm {import('node-pg-migrate').MigrationBuilder}
@@ -8,44 +9,34 @@
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-  pgm.createTable('songs', {
+  pgm.createTable('playlist_songs', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
     },
-    title: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    year: {
-      type: 'INT',
-      notNull: true,
-    },
-    genre: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    performer: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    duration: {
-      type: 'INT',
-      notNull: false,
-    },
-    albumId: {
+    playlist_id: {
       type: 'VARCHAR(50)',
-      notNull: false,
-      references: 'albums',
+      notNull: true,
+    },
+    song_id: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
+  });
+
+  pgm.addConstraint('playlist_songs', 'fk_playlist_songs.playlist_id_playlists.id', {
+    foreignKeys: {
+      columns: 'playlist_id',
+      references: 'playlists(id)',
       onDelete: 'CASCADE',
     },
-    created_at: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    updated_at: {
-      type: 'TEXT',
-      notNull: true,
+  });
+
+  pgm.addConstraint('playlist_songs', 'fk_playlist_songs.song_id_songs.id', {
+    foreignKeys: {
+      columns: 'song_id',
+      references: 'songs(id)',
+      onDelete: 'CASCADE',
     },
   });
 };
@@ -56,5 +47,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('songs');
+  pgm.dropTable('playlist_songs');
 };
