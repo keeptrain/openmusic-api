@@ -1,6 +1,7 @@
 class AlbumsHandler {
-  constructor(service, validator) {
+  constructor(service, storageService, validator) {
     this._service = service;
+    this._storageService = storageService;
     this._validator = validator;
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
@@ -31,6 +32,7 @@ class AlbumsHandler {
     const { id } = request.params;
 
     const album = await this._service.getAlbumById(id);
+    album.coverUrl = (album.coverUrl) ? `http://${process.env.HOST}:${process.env.PORT}/upload/images/${album.coverUrl}` : null;
 
     const response = h.response({
       status: 'success',
