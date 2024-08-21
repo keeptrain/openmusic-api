@@ -36,4 +36,8 @@ const mapDBToModelSong = ({
   updatedAt: updated_at,
 });
 
-module.exports = { mapDBToModelAlbum, mapDBToModelSong };
+const mapDBToUserAlbumLikes = (count) => ({
+  likes: parseInt(count, 10),
+});
+
+module.exports = { mapDBToModelAlbum, mapDBToModelSong, mapDBToUserAlbumLikes };
