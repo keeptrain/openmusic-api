@@ -5,9 +5,10 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
 class PlaylistService {
-  constructor(collaborationsService) {
+  constructor(cacheService, collaborationsService) {
     this._pool = new Pool();
     this._collaborationsService = collaborationsService;
+    this._cacheService = cacheService;
   }
 
   async addPlaylist({ name, owner }) {
@@ -22,6 +23,8 @@ class PlaylistService {
     if (!result.rowCount) {
       throw new InvariantError('Playlist gagal ditambahkan');
     }
+
+    await this._cacheService.delete(`playlists:${owner}`);
 
     return result.rows[0].id;
   }
@@ -52,6 +55,8 @@ class PlaylistService {
     if (!result.rowCount) {
       throw new NotFoundError('Playlist gagal dihapus. Id tidak ditemukan');
     }
+
+    await this._cacheService.delete(`playlists:${result.rows[0].owner}}`);
   }
 
   async addSongToPlaylist(playlistId, songId) {
